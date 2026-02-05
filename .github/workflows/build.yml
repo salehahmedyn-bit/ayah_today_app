@@ -7,46 +7,58 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
 
-      - name: Clean and Repair Project
+      # 1. إنشاء مجلد أندرويد نظيف
+      - name: Clean and Create Android Project
         run: |
           rm -rf android
           flutter create . --platforms android --org com.ayah.today
-          
-          # إعداد الأذونات وتسمية التطبيق
-          sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/><uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/><uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/><application|g' android/app/src/main/AndroidManifest.xml
-          sed -i 's|android:label=".*"|android:label="آية اليوم"|g' android/app/src/main/AndroidManifest.xml
 
-      - name: Set App Icon
+      # 2. إضافة مكتبة الأيقونات وإعداد ملفها
+      - name: Setup Icon Configuration
         run: |
-          # تثبيت أداة توليد الأيقونات بشكل سريع
           flutter pub add flutter_launcher_icons --dev
           
-          # إنشاء ملف إعدادات الأيقونة
+          # إنشاء ملف الإعدادات للأيقونة
           cat <<EOF > flutter_launcher_icons.yaml
           flutter_launcher_icons:
-            android: true
+            android: "launcher_icon"
             ios: false
             image_path: "fds.png"
             min_sdk_android: 21
+            adaptive_icon_background: "#ffffff"
+            adaptive_icon_foreground: "fds.png"
           EOF
-          
-          # تشغيل الأداة لتوليد الأيقونات في مجلد أندرويد الجديد
-          flutter pub run flutter_launcher_icons
 
+      # 3. تثبيت المكتبات (هذه الخطوة كانت ناقصة قبل تشغيل الأداة)
       - name: Install Dependencies
         run: flutter pub get
 
+      # 4. توليد الأيقونات فعلياً
+      - name: Generate App Icons
+        run: dart run flutter_launcher_icons
+
+      # 5. تعديل الاسم والصلاحيات (بعد توليد الأيقونات لضمان عدم الكتابة فوقها)
+      - name: Update Manifest (Label & Permissions)
+        run: |
+          # إضافة الصلاحيات
+          sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/><uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/><uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/><application|g' android/app/src/main/AndroidManifest.xml
+          
+          # تغيير اسم التطبيق إلى "آية اليوم"
+          sed -i 's|android:label="ayah_today_app"|android:label="آية اليوم"|g' android/app/src/main/AndroidManifest.xml
+
+      # 6. بناء التطبيق
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AyahToday-Final
+          name: AyahToday-Final-Icon
           path: build/app/outputs/flutter-apk/app-release.apk
