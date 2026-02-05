@@ -12,14 +12,26 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          # تم حذف سطر flutter-version ليعمل النظام تلقائياً
           cache: true
+
+      - name: Clean and Repair Android Project
+        run: |
+          # 1. حذف مجلد الأندرويد اليدوي المليء بالأخطاء
+          rm -rf android
+          
+          # 2. إنشاء مجلد أندرويد جديد ونظيف تماماً ومتوافق مع 2026
+          flutter create . --platforms android --org com.ayah.today
+          
+          # 3. حقن الصلاحيات (الإنترنت والتخزين) داخل الملف الجديد تلقائياً
+          sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/><uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/><uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/><application|g' android/app/src/main/AndroidManifest.xml
+          
+          # 4. إصلاح إعدادات العنوان (Label)
+          sed -i 's|android:label="ayah_today_app"|android:label="آية اليوم"|g' android/app/src/main/AndroidManifest.xml
 
       - name: Install Dependencies
         run: flutter pub get
 
       - name: Build APK
-        # الأمر القياسي لبناء النسخة النهائية
         run: flutter build apk --release --no-tree-shake-icons
 
       - name: Upload Artifact
