@@ -17,3 +17,4 @@ jobs:
         with:
           name: AyahToday-Final-APK
           path: build/app/outputs/flutter-apk/app-release.apk
+
