@@ -7,13 +7,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.x.x' # يستخدم أحدث نسخة مستقرة في 2026
-      - run: flutter pub get
-      - run: flutter build apk --release --no-tree-shake-icons
-      - name: Upload APK
+          # تركنا خانة الإصدار فارغة ليسحب أحدث نسخة مستقرة تلقائياً لعام 2026
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        # أضفنا --no-tree-shake-icons لتجنب مشاكل الأيقونات في البناء
+        run: flutter build apk --release --no-tree-shake-icons
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: AyahToday-Final-APK
