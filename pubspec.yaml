@@ -1,0 +1,17 @@
+name: ayah_app
+description: "تطبيق آية اليوم"
+publish_to: 'none'
+version: 1.0.0+1
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  screenshot: ^3.0.0
+  gal: ^2.3.2
+flutter:
+  uses-material-design: true
+  assets:
+    - quran.txt
+    - fds.png
+    - fdss.png
