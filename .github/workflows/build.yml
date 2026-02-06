@@ -14,21 +14,15 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Clean and Create Android Project
+      - name: Hard Reset Android Project
         run: |
+          # حذف المجلد القديم تماماً لضمان عدم وجود ملفات V1
           rm -rf android
+          # إعادة إنشاء بيئة أندرويد حديثة متوافقة مع فلاتر 3.x
           flutter create . --platforms android --org com.ayah.today
-
+          
       - name: Install Dependencies
         run: flutter pub get
-
-      - name: Update Manifest (Label & Permissions)
-        run: |
-          # إضافة الصلاحيات المطلوبة لحفظ الصور والإنترنت
-          sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET"/><uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/><uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/><application|g' android/app/src/main/AndroidManifest.xml
-          
-          # تغيير اسم التطبيق الظاهري
-          sed -i 's|android:label=".*"|android:label="آية اليوم"|g' android/app/src/main/AndroidManifest.xml
 
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
@@ -36,5 +30,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AyahToday-Final-Ready
+          name: AyahToday-Final-Success
           path: build/app/outputs/flutter-apk/app-release.apk
