@@ -84,10 +84,7 @@ class _AyahScreenState extends State<AyahScreen> {
   }
 
   Future<void> captureAndSave() async {
-    final Uint8List? image = await screenshotController.capture(
-      delay: const Duration(milliseconds: 10),
-      pixelRatio: 3.0,
-    );
+    final Uint8List? image = await screenshotController.capture(pixelRatio: 3.0);
     if (image != null) {
       final directory = await getTemporaryDirectory();
       final imagePath = File('${directory.path}/ayah_today.png');
@@ -112,22 +109,15 @@ class _AyahScreenState extends State<AyahScreen> {
           children: [
             const SizedBox(height: 50),
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              padding: const EdgeInsets.all(8),
               width: 320,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(15),
-              ),
+              decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(15)),
               child: Wrap(
                 alignment: WrapAlignment.center,
                 spacing: 8,
-                runSpacing: 8,
                 children: themeColors.map((color) => GestureDetector(
                   onTap: () => setState(() => primaryColor = color),
-                  child: Container(
-                    width: 14, height: 14,
-                    decoration: BoxDecoration(color: color, shape: BoxShape.circle, border: Border.all(color: Colors.black12, width: 0.5)),
-                  ),
+                  child: Container(width: 14, height: 14, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
                 )).toList(),
               ),
             ),
@@ -143,11 +133,11 @@ class _AyahScreenState extends State<AyahScreen> {
                   children: [
                     Container(
                       width: 280,
-                      padding: const EdgeInsets.only(top: 40, bottom: 25, left: 20, right: 20),
+                      padding: const EdgeInsets.only(top: 40, bottom: 20, left: 20, right: 20),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.95),
                         borderRadius: BorderRadius.circular(25),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 30, offset: const Offset(0, 10))],
+                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 30)],
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -164,7 +154,10 @@ class _AyahScreenState extends State<AyahScreen> {
                             ),
                           ),
                           const SizedBox(height: 15),
-                          Text(ayahSource, style: TextStyle(color: primaryColor, fontSize: 10, fontWeight: FontWeight.bold, opacity: 0.7)),
+                          // السطر المصحح أدناه:
+                          Text(ayahSource, style: TextStyle(color: primaryColor.withOpacity(0.7), fontSize: 10, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 10),
+                          const Text("التكرار ليس فشلاً", style: TextStyle(color: Colors.grey, fontSize: 8, fontStyle: FontStyle.italic)),
                         ],
                       ),
                     ),
@@ -172,7 +165,7 @@ class _AyahScreenState extends State<AyahScreen> {
                       top: -15,
                       child: Container(
                         width: 40, height: 35,
-                        decoration: BoxDecoration(color: primaryColor, borderRadius: BorderRadius.circular(10), boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))]),
+                        decoration: BoxDecoration(color: primaryColor, borderRadius: BorderRadius.circular(10)),
                         child: const Icon(FontAwesomeIcons.quoteRight, color: Colors.white, size: 16),
                       ),
                     ),
@@ -190,7 +183,7 @@ class _AyahScreenState extends State<AyahScreen> {
                     onTap: getRandomAyah,
                     child: Container(
                       width: 45, height: 45,
-                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 15)]),
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
                       child: Icon(FontAwesomeIcons.rotateRight, size: 16, color: primaryColor),
                     ),
                   ),
@@ -199,7 +192,7 @@ class _AyahScreenState extends State<AyahScreen> {
                     onTap: captureAndSave,
                     child: Container(
                       width: 45, height: 45,
-                      decoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle, boxShadow: [BoxShadow(color: primaryColor.withOpacity(0.3), blurRadius: 15)]),
+                      decoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle),
                       child: const Icon(FontAwesomeIcons.camera, size: 16, color: Colors.white),
                     ),
                   ),
